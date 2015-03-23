@@ -2,9 +2,11 @@ var express = require('express');
 var expressSession = require('express-session');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+
 var dataAccess = require('./data/access.js')();
 var moduleLoader = require('./moduleLoader.js');
 var crypto = require('crypto');
@@ -47,13 +49,22 @@ apiRouter.get('/modules', function(req, res){
 	res.json(modules.map(function(m) { return m.name }));
 });
 
+apiRouter.get('/modules/components', function(req, res){
+	res.type('.js');
+	var resJavascript = modules.map(function(m) {
+		return m.component;
+	}).join("\n");
+	res.write(resJavascript);
+	res.end();
+});
+
 var viewRouter = express.Router();
 
 app.use('/', viewRouter);
 
 viewRouter
 	.get('/', function(req, res) {
-		dataAccess.setting.get('companion_password', function(err, value){
+		dataAccess.getSetting('companion_password', function(err, value){
 			res.sendFile(!value ? "views/sign-up.html" :
 				"views/logged-in.html", { root: __dirname });
 		});
@@ -64,12 +75,12 @@ viewRouter
 			their_name = body.their_name,
 			password = body.password;
 
-		dataAccess.setting.set('companion1_name', your_name);
-		dataAccess.setting.set('companion2_name', their_name);
+		dataAccess.setSetting('companion1_name', your_name);
+		dataAccess.setSetting('companion2_name', their_name);
 
 		crypto.pbkdf2(password, salt, 4096, 512, 'sha256', function(err, key) {
 			if (err) throw err;
-			dataAccess.setting.set('companion_password', key.toString('hex'), function(err){
+			dataAccess.setSetting('companion_password', key.toString('hex'), function(err){
 				if (err) throw err;
 				res.redirect('/');
 			});
