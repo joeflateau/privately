@@ -5,18 +5,22 @@ function logError(err) {
 }
 
 function DataAccess(){
+	var da = this;
+
 	this.db = new sqlite3.cached.Database('privately.db');
 
-	this.tableSchema('settings', {
-		key: "TEXT PRIMARY KEY",
-		name: "TEXT",
-		value: "NULL",
-		defaultValue: "NULL"
-	});
+	this.db.serialize(function(){
+		da.tableSchema('settings', {
+			key: "TEXT PRIMARY KEY",
+			name: "TEXT",
+			value: "NULL",
+			defaultValue: "NULL"
+		});
 
-	this.upsertSetting("companion1_name", "Companion 1 Name", "")
-	this.upsertSetting("companion2_name", "Companion 1 Name", "")
-	this.upsertSetting("companion_password", "Shared Password", "")
+		da.upsertSetting("companion1_name", "Companion 1 Name", "")
+		da.upsertSetting("companion2_name", "Companion 1 Name", "")
+		da.upsertSetting("companion_password", "Shared Password", "")
+	});
 }
 
 DataAccess.prototype = {
@@ -73,7 +77,10 @@ DataAccess.prototype = {
 		this.db.run(sql, Object.keys(values).reduce(function(curr, prev) {
 			prev["$" + curr] = values[curr];
 			return prev;
-		}, {}), callback);
+		}, {}), function(err){
+			if (err) console.error(err);
+			if (callback) callback.call(this, err);
+		});
 	},
 	all: function(sql, params, callback) {
 		return this.db.all.apply(this.db, arguments);

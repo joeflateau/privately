@@ -3,7 +3,7 @@ ko.components.register('chat',  {
 		var vm = this;
 		vm.messages = ko.observableArray([]);
 		vm.message = ko.observable();
-		io = params.io;
+		var io = params.io;
 
 		io.on('received', function(message){
 			vm.messages.push(message);
@@ -17,9 +17,15 @@ ko.components.register('chat',  {
 			vm.message("");
 		}
 	},
-	template: '<ul data-bind="foreach: messages">' +
-		      '<li><span data-bind="text: text"></span></li>' +
-			  '</ul>' + 
-			  '<input type="text" data-bind="value: message">' +
-			  '<button data-bind="click: send">Send</button>'
+	template: '<div data-bind="foreach: messages"> \
+	               <div class="alert" data-bind="text: text"></div> \
+			   </div> \
+               <form> \
+                    <div class="input-group"> \
+                        <input type="text" data-bind="value: message" class="form-control"> \
+		  		        <div class="input-group-btn"> \
+                            <button data-bind="click: send" class="btn btn-default">Send</button> \
+                        </div> \
+                    </div> \
+	  		   </form>'
 });

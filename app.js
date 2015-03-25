@@ -1,3 +1,4 @@
+var fs = require('fs');
 var express = require('express');
 var expressSession = require('express-session');
 var cookieParser = require('cookie-parser');
@@ -46,13 +47,17 @@ var modules = moduleLoader({
 });
 
 apiRouter.get('/modules', function(req, res){
-	res.json(modules.map(function(m) { return m.name }));
+	res.json(modules.map(function(m) { 
+		return {
+			name: m.name
+		}
+	}));
 });
 
-apiRouter.get('/modules/components', function(req, res){
+apiRouter.get('/modules/components.js', function(req, res){
 	res.type('.js');
 	var resJavascript = modules.map(function(m) {
-		return m.component;
+		return fs.readFileSync(m.component);
 	}).join("\n");
 	res.write(resJavascript);
 	res.end();

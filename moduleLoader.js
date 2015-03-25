@@ -9,7 +9,7 @@ function loadModules(options){
 			if (moduleName.indexOf('privately-')===0) {
 				return { name: moduleName.substring(10), 
 					 module: require('./' + dir + '/' + moduleName),
-					 component: fs.readFileSync('./' + dir + '/' + moduleName + "/component.js", "utf8") };
+					 component: './' + dir + '/' + moduleName + "/component.js" };
 			}
 		}).concat(loaded);
 	});
