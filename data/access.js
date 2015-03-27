@@ -66,18 +66,23 @@ DataAccess.prototype = {
 		this.db.run(sql);
 	},
 	insert: function(tableName, values, callback){
-		var sql = "INSERT INTO " + tableName + "( " + 
+		var sql = "INSERT INTO " + tableName + " (" + 
 			Object.keys(values).map(function(key){
 				return key;
 			}).join(", ") + ") VALUES ( " + 
 			Object.keys(values).map(function(key){
 				return "$" + key;
 			}).join(", ") + ")";
-
-		this.db.run(sql, Object.keys(values).reduce(function(curr, prev) {
+			
+		var params = Object.keys(values).reduce(function(prev, curr) {
 			prev["$" + curr] = values[curr];
 			return prev;
-		}, {}), function(err){
+		}, {});
+
+		console.log(sql);
+		console.log(params);
+
+		this.db.run(sql, params, function(err){
 			if (err) console.error(err);
 			if (callback) callback.call(this, err);
 		});

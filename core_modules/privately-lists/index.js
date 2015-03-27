@@ -23,12 +23,10 @@ function Lists(options){
 		function emitAllLists(){
 			da.all("SELECT * FROM lists", function(err, rows){
 				if (err) console.error(err);
-				console.log(rows.length);
+				console.log(JSON.stringify(rows));
 				socket.emit('lists', rows);
 			});
 		}
-
-		emitAllLists();
 
 		function emitListItems(listId){
 			da.all("SELECT * FROM listsItems WHERE listId = ?", listId, function(err, rows){
@@ -40,11 +38,17 @@ function Lists(options){
 			});
 		}
 
+		socket.on('showlists', function(){
+			emitAllLists();
+		})
+
+
 		socket.on('showlistitems', function(listId){
 			emitListItems(listId);	
 		});
 
 		socket.on('addlist', function(name){
+			console.log(name);
 			da.insert("lists", {
 				name: name
 			}, function(err){

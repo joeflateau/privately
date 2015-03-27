@@ -11,15 +11,21 @@ ko.components.register('lists',  {
 
 		var io = params.io;
 
-
 		io.on('lists', function(lists){
 			vm.lists(lists);
+			if (!vm.selectedListId() && vm.lists().length > 0) {
+				vm.selectedListId(vm.lists()[0].id);
+			}
 		});
+		
 		io.on('listitems', function(data){
+			console.log(data.listId, vm.selectedListId());
 			if (data.listId === vm.selectedListId()){
 				vm.listsItems(data.items);
 			}
 		});
+
+		io.emit('showlists');
 
 		ko.computed(function(){
 			var id = vm.selectedListId();
@@ -28,9 +34,7 @@ ko.components.register('lists',  {
 		});
 		
 		vm.addList = function(){
-			io.emit('addlist', { 
-				name: vm.listName()
-			});
+			io.emit('addlist',  vm.listName())
 			vm.listName("");
 		}
 		
@@ -42,11 +46,13 @@ ko.components.register('lists',  {
 			vm.itemText("");
 		}
 	},
-	template: '<div class="container"> \
+	template: '<div class="container-fluid"> \
 				   <div class="col-md-3"> \
-					   	<div data-bind="foreach: lists"> \
-			               <div data-bind="text: name, click: $parent.selectedListId(id)"></div> \
-					   </div> \
+					   	<ul data-bind="foreach: lists" class="nav nav-pills nav-stacked text-uppercase"> \
+			               <li data-bind="css: {active:$parent.selectedListId() === id}"> \
+	               			 <a href="#" data-bind="text: name, click: function() { $parent.selectedListId(id) }"></a> \
+			               </li> \
+					   </ul> \
 		               	<form> \
 		                    <div class="input-group"> \
 		                        <input type="text" data-bind="value: listName" class="form-control"> \
@@ -57,6 +63,9 @@ ko.components.register('lists',  {
 			  		   </form> \
 				   </div> \
 	               <div class="col-md-9"> \
+	               <ul data-bind="foreach: listsItems" class="nav nav-pills nav-stacked"> \
+	               	<li><a href="#" data-bind="text: text"></a></li> \
+	               </ul> \
 	               	<form data-bind="if: selectedListId"> \
 	                    <div class="input-group"> \
 	                        <input type="text" data-bind="value: itemText" class="form-control"> \
