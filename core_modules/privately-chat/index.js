@@ -16,11 +16,18 @@ function Chat(options){
 	});
 
 	moduleIo.on('connection', function(socket){
-		da.all("SELECT * FROM chat", function(err, rows){
-			if (err) console.error(err);
-			console.log(rows.length);
-			socket.emit('messages', rows);
+		function emitChatMessages(){
+			da.all("SELECT * FROM chat", function(err, rows){
+				if (err) console.error(err);
+				console.log(rows.length);
+				socket.emit('messages', rows);
+			});
+		}
+
+		socket.on('listmessages', function(){
+			emitChatMessages();
 		});
+
 		socket.on('send', function(message){
 			var sender = 0,
 				text = message.text;

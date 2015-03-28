@@ -1,0 +1,29 @@
+html,
+body {
+	margin: 0;
+	padding:0;
+	background: #232323;
+}
+
+body {
+	padding-top: 200px;
+}
+
+header {
+	
+}
+
+main {
+	display: block;
+}
+
+footer {
+
+}
+
+@media screen and (min-width: 640px) {
+	.tall {
+		height: 500px;
+		overflow:auto;
+	}
+}
