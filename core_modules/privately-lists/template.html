@@ -1,0 +1,46 @@
+<div class="col-md-8">
+	<div class="panel panel-primary">
+		<div class="panel-heading" data-bind="with: selectedList">
+			<h3 class="panel-title" data-bind="text: name">Items</h3>
+		</div>
+		<div class="panel-body">
+			<ul data-bind="foreach: listsItems" class="list-group tall">
+				<li class="list-group-item"><a href="#" data-bind="text: text"></a></li>
+			</ul>
+		</div>
+		<div class="panel-footer">
+			<form data-bind="if: selectedList">
+				<div class="input-group">
+					<input type="text" data-bind="value: itemText" class="form-control">
+					<div class="input-group-btn">
+						<button data-bind="click: addItem" class="btn btn-default">Add</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<div class="col-md-4">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">Lists</h3>
+		</div>
+		<div class="panel-body">
+			<div data-bind="foreach: lists" class="list-group text-uppercase tall">
+				<a class="list-group-item" data-bind="css: {active:$parent.selectedList() === $data},
+					text: name,
+					click: function() { $parent.selectedList($data) }"></a>
+			</div>
+		</div>
+		<div class="panel-footer">
+			<form>
+				<div class="input-group">
+					<input type="text" data-bind="value: listName" class="form-control">
+					<div class="input-group-btn">
+						<button data-bind="click: addList" class="btn btn-default">Add</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>

@@ -57,9 +57,13 @@ apiRouter.get('/modules', function(req, res){
 apiRouter.get('/modules/components.js', function(req, res){
 	res.type('.js');
 	var resJavascript = modules.map(function(m) {
-		return fs.readFileSync(m.component);
+		return "ko.components.register('" + m.name + "', { require: '/api/" + m.name + "/viewmodel.js' })";
 	}).join("\n");
-	res.write(resJavascript);
+	res.write([
+		"define(['knockout'], function(ko) {",
+		resJavascript,
+		"})"
+		].join("\n"));
 	res.end();
 });
 

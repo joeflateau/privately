@@ -9,7 +9,7 @@ function loadModules(options){
 			if (moduleName.indexOf('privately-')===0) {
 				return { name: moduleName.substring(10), 
 					 module: require('./' + dir + '/' + moduleName),
-					 component: './' + dir + '/' + moduleName + "/component.js" };
+					 path: './' + dir + '/' + moduleName };
 			}
 		}).concat(loaded);
 	});
@@ -21,9 +21,18 @@ function loadModules(options){
 		var moduleApiRouter = express.Router();
 		var moduleIo = options.io.of("/" + module.name);
 		options.apiRouter.use('/' + module.name, moduleApiRouter);
+
+		moduleApiRouter
+			.get('/viewmodel.js', function(req, res){
+				res.sendFile(module.path + '/viewmodel.js', { root: __dirname });
+			})
+			.get('/template.html', function(req, res){
+				res.sendFile(module.path + '/template.html', { root: __dirname });
+			});
+		
 		return {
 			name: module.name,
-			component: module.component,
+			path: module.path,
 			instance:  module.module({
 				dataAccess: options.dataAccess,
 				moduleApiRouter: moduleApiRouter,

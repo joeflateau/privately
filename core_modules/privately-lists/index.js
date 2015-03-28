@@ -48,7 +48,6 @@ function Lists(options){
 		});
 
 		socket.on('addlist', function(name){
-			console.log(name);
 			da.insert("lists", {
 				name: name
 			}, function(err){
